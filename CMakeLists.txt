@@ -73,11 +73,6 @@ IF(TREAT_WARNINGS_AS_ERRORS)
   ENDIF(MSVC)
 ENDIF(TREAT_WARNINGS_AS_ERRORS)
 
-SET(CMAKE_MODULE_PATH "${FasTC_SOURCE_DIR}/CMakeModules" ${CMAKE_MODULE_PATH})
-FIND_PACKAGE(PVRTexLib)
-FIND_PACKAGE(BC7Export)
-FIND_PACKAGE(PNG)
-
 ######################################################################
 ##
 ## Package definitions 
@@ -89,66 +84,11 @@ SET(LIB_INSTALL_DIR lib CACHE INTERNAL "")
 SET(BIN_INSTALL_DIR bin CACHE INTERNAL "")
 
 SET(FASTC_DIRECTORIES
-  Base Core IO BPTCEncoder PVRTCEncoder DXTEncoder ETCEncoder ASTCEncoder
+  Base ASTCEncoder
 )
 
 FOREACH(DIR ${FASTC_DIRECTORIES})
   ADD_SUBDIRECTORY(${DIR})
 ENDFOREACH()
-ADD_SUBDIRECTORY(CLTool)
 
-SET(FasTC_LIBRARIES FasTCBase FasTCIO FasTCCore BPTCEncoder PVRTCEncoder DXTEncoder ETCEncoder ASTCEncoder)
-SET(FasTC_EXECUTABLES tc compare decomp)
-
-######################################################################
-##
-## Config
-##
-######################################################################
-
-INCLUDE(CMakePackageConfigHelpers)
-CONFIGURE_PACKAGE_CONFIG_FILE(
-  "${FasTC_SOURCE_DIR}/CMakeModules/FasTCConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/FasTCConfig.cmake"
-  INSTALL_DESTINATION ${LIB_INSTALL_DIR}/cmake/FasTC
-  PATH_VARS INCLUDE_INSTALL_DIR BIN_INSTALL_DIR LIB_INSTALL_DIR)
-
-WRITE_BASIC_PACKAGE_VERSION_FILE(
-  "${CMAKE_CURRENT_BINARY_DIR}/FasTCConfigVersion.cmake"
-  VERSION ${FasTC_VERSION}
-  COMPATIBILITY SameMajorVersion)
-
-INSTALL(
-  FILES "${CMAKE_CURRENT_BINARY_DIR}/FasTCConfigVersion.cmake" "${CMAKE_CURRENT_BINARY_DIR}/FasTCConfig.cmake"
-  DESTINATION ${LIB_INSTALL_DIR}/cmake/FasTC
-  COMPONENT dev)
-
-EXPORT(
-  TARGETS ${FasTC_LIBRARIES} ${FasTC_EXECUTABLES}
-  FILE "${CMAKE_CURRENT_BINARY_DIR}/FasTCTargets.cmake")
-EXPORT(PACKAGE FasTC)
-
-INSTALL(
-  EXPORT FasTCTargets
-  FILE FasTCTargets.cmake
-  DESTINATION ${LIB_INSTALL_DIR}/cmake/FasTC)
-
-######################################################################
-##
-## Testing
-##
-######################################################################
-
-ENABLE_TESTING()
-
-IF(MSVC)
-  SET(gtest_force_shared_crt TRUE CACHE BOOL "Used to properly select MSVC runtime libraries" FORCE)
-ENDIF(MSVC)
-
-ADD_SUBDIRECTORY(GTest)
-FOREACH(DIR ${FASTC_DIRECTORIES})
-  SET(TESTDIR ${FasTC_SOURCE_DIR}/${DIR}/test)
-  IF(IS_DIRECTORY ${TESTDIR})
-    ADD_SUBDIRECTORY(${TESTDIR})
-  ENDIF()
-ENDFOREACH()
+SET(FasTC_LIBRARIES FasTCBase ASTCEncoder)
