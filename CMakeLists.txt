@@ -92,3 +92,5 @@ FOREACH(DIR ${FASTC_DIRECTORIES})
 ENDFOREACH()
 
 SET(FasTC_LIBRARIES FasTCBase ASTCEncoder)
+
+target_include_directories(ASTCEncoder PUBLIC ./ASTCEncoder/include/)
